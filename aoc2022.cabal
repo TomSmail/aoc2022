@@ -70,7 +70,8 @@ executable aoc2022
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.14.3.0,
-        split ^>=0.2.3.5
+        split ^>=0.2.3.5,
+        hxt ^>=9.3.1.22
 
     -- Directories containing source files.
     hs-source-dirs:   app
