@@ -96,5 +96,10 @@ day4 = do contents <- readFile "data/4.txt"
                 = foldl (\prev x -> if x then prev + 1 else prev) 0 checks
           putStrLn "\n Solution 1: "
           print answer
+          let checks2 
+                = map (\(x:y:_) -> (foldl (\prev z -> prev || z `elem` y ) False x) && (foldl (\prev z -> prev || z `elem` x ) False y) ) pairs
+          let answer2 
+                = foldl (\prev x -> if x then prev + 1 else prev) 0 checks2
           putStrLn "\n Solution 2: "
-          
+          print answer2
+          putStrLn "---------------"
