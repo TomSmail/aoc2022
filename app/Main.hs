@@ -1,10 +1,12 @@
 import Data.List.Split
-import Data.List(sort)
+import Data.List(sort,nub)
 import Data.Char
 import Text.XML.HXT.DOM.Util
+import qualified Data.Text as T (replace, pack, splitOn) 
+
 
 main :: IO ()
-main = day4
+main = day6
 
 day1:: IO ()
 day1 = do contents <- readFile "data/1.txt"
@@ -102,4 +104,27 @@ day4 = do contents <- readFile "data/4.txt"
                 = foldl (\prev x -> if x then prev + 1 else prev) 0 checks2
           putStrLn "\n Solution 2: "
           print answer2
+          putStrLn "---------------"
+
+day5:: IO()
+day5 = do contents <- readFile "data/5.txt"
+          putStrLn "---------------"
+          putStrLn  "Day 5:"
+          let boardMoves
+                = splitOn [""] $ lines contents
+          let board
+                = map (T.splitOn (T.pack "[ ]")) $ init $ map (\x -> T.replace (T.pack "    ") (T.pack "[ ] ") (T.pack x))  $ head boardMoves
+          print board
+
+day6:: IO()
+day6 = do contents <- readFile "data/6.txt"
+          putStrLn "---------------"
+          putStrLn  "Day 6:"
+          let intList
+                = foldl (\(num, prev@[_,b,c,d]) x  -> if x `elem` prev || ((length $ nub prev) /= (length prev)) then ([head num + 1] ++ num, [b,c,d,x]) else ([head num + 1] ++ [0] ++ num, [b,c,d,x]) )  ([0], [head contents,head $ tail contents,head $ tail $ tail contents,head $ tail $ tail $ tail contents]) (tail $ tail $ tail $ tail contents)
+          let answer
+                = 4 + (toInteger $ last $ head $ splitWhen (==0) $ tail $ reverse $ fst intList )
+          putStrLn "\n Solution 1: "
+          print answer 
+          putStrLn "\n Solution 2: "
           putStrLn "---------------"
