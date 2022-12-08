@@ -2,7 +2,7 @@ import Data.List.Split
 import Data.List(sort,nub)
 import Data.Char
 import Text.XML.HXT.DOM.Util
-import qualified Data.Text as T (replace, pack, splitOn) 
+import qualified Data.Text as T (replace, pack, splitOn)
 
 
 main :: IO ()
@@ -13,7 +13,7 @@ day1 = do contents <- readFile "data/1.txt"
           putStrLn "---------------"
           putStrLn  "Day 1: "
           let stringArray = splitContent contents
-          let intArray = map (map (\x -> read x :: Int) ) stringArray 
+          let intArray = map (map (\x -> read x :: Int) ) stringArray
           let sumArray = map sum intArray
           putStrLn "\n Solution 1: "
           print $ foldl (\x y -> if x < y then y else x ) 0 sumArray
@@ -35,22 +35,22 @@ day2 = do contents <- readFile "data/2.txt"
           print $ foldl (\x y -> x + grade' y  ) 0 rpsArray
           putStrLn "---------------"
           where mark:: String -> Int
-                mark z 
+                mark z
                     | z == "X" = 1
                     | z == "Y" = 2
                     | otherwise = 3
                 grade:: [String] -> Int
                 grade [] = 0
-                grade (x:b) 
+                grade (x:b)
                     | x == "A" = if y == "X" then 3 else
                          if y == "Y" then 6 else 0
                     | x == "B" = if y == "X" then 0 else
-                         if y == "Y" then 3 else 6 
+                         if y == "Y" then 3 else 6
                     | otherwise = if y == "X" then 6 else
-                         if y == "Y" then 0 else 3 
+                         if y == "Y" then 0 else 3
                  where y = head b
                 grade' [] = 0
-                grade' (a:b) 
+                grade' (a:b)
                     | y == "X" = if a == "A" then mark' "C" else
                          if a == "B" then mark' "A" else mark' "B"
                     | y == "Y" = if a == "A" then 3 + mark' "A" else
@@ -59,7 +59,7 @@ day2 = do contents <- readFile "data/2.txt"
                          if a == "B" then 6 +  mark' "C" else 6 + mark' "A"
                   where y = head b
                 mark':: String -> Int
-                mark' z 
+                mark' z
                     | z == "A" = 1
                     | z == "B" = 2
                     | otherwise = 3
@@ -68,20 +68,20 @@ day3:: IO()
 day3 = do contents <- readFile "data/3.txt"
           putStrLn "---------------"
           putStrLn  "Day 3:"
-          let containers 
+          let containers
                =  map (\xs -> splitAt (length xs `div` 2)  xs) $ lines contents
-          let letters 
+          let letters
                = map (\xs -> filter (\x -> x `elem` snd xs) (fst xs)) containers
-          let answer 
+          let answer
                =  sum $ map (\xs -> if isUpper (head xs) then ord (head xs) - 38 else ord (head xs) - 96) letters
           putStrLn "\n Solution 1: "
           print answer
           putStrLn "\n Solution 2: "
           let groups
                = chunksOf 3 $ lines contents
-          let badges 
+          let badges
                = map (\xs -> filter (\x -> x `elem` head (tail xs) && x `elem` head (tail $ tail xs) ) (head xs)) groups
-          let answer2 
+          let answer2
                =  sum $ map (\xs -> if isUpper (head xs) then ord (head xs) - 38 else ord (head xs) - 96) badges
           print answer2
           putStrLn "---------------"
@@ -92,15 +92,15 @@ day4 = do contents <- readFile "data/4.txt"
           putStrLn  "Day 4:"
           let pairs
                 = map (\x -> map (\(a:b:_) -> [decimalStringToInt a .. decimalStringToInt b]) x) $ map (\x -> map (splitOn "-") x) $ map (splitOn ",") (lines contents)
-          let checks 
+          let checks
                 = map (\(x:y:_) -> (foldl (\prev z -> prev && z `elem` y ) True x) || (foldl (\prev z -> prev && z `elem` x ) True y) ) pairs
-          let answer 
+          let answer
                 = foldl (\prev x -> if x then prev + 1 else prev) 0 checks
           putStrLn "\n Solution 1: "
           print answer
-          let checks2 
+          let checks2
                 = map (\(x:y:_) -> (foldl (\prev z -> prev || z `elem` y ) False x) && (foldl (\prev z -> prev || z `elem` x ) False y) ) pairs
-          let answer2 
+          let answer2
                 = foldl (\prev x -> if x then prev + 1 else prev) 0 checks2
           putStrLn "\n Solution 2: "
           print answer2
@@ -120,11 +120,17 @@ day6:: IO()
 day6 = do contents <- readFile "data/6.txt"
           putStrLn "---------------"
           putStrLn  "Day 6:"
-          let intList
-                = foldl (\(num, prev@[_,b,c,d]) x  -> if x `elem` prev || ((length $ nub prev) /= (length prev)) then ([head num + 1] ++ num, [b,c,d,x]) else ([head num + 1] ++ [0] ++ num, [b,c,d,x]) )  ([0], [head contents,head $ tail contents,head $ tail $ tail contents,head $ tail $ tail $ tail contents]) (tail $ tail $ tail $ tail contents)
-          let answer
-                = 4 + (toInteger $ last $ head $ splitWhen (==0) $ tail $ reverse $ fst intList )
+          let intList p
+                = foldl (\(num, prev) x  ->
+                    if (length (nub prev) /= length prev)
+                        then ((head num + 1) : num, tail prev ++ [x])
+                     else ([head num + 1] ++ [0] ++ num, tail prev ++ [x]) )
+                       ([0], take p contents) (drop p contents)
+          let answer p
+                = p + ( last . head . splitWhen (==0) . tail . reverse $ fst (intList p) )
+          print  (splitWhen (==0) . tail . reverse $ fst (intList 14) )
           putStrLn "\n Solution 1: "
-          print answer 
+          print $ answer 4
           putStrLn "\n Solution 2: "
+          print $ answer 14
           putStrLn "---------------"
