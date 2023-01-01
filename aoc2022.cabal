@@ -71,7 +71,8 @@ executable aoc2022
     build-depends:
         base ^>=4.14.3.0,
         split ^>=0.2.3.5,
-        hxt ^>=9.3.1.22
+        hxt ^>=9.3.1.22,
+        text ^>=1.2.4.1
 
     -- Directories containing source files.
     hs-source-dirs:   app

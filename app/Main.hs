@@ -1,12 +1,12 @@
 import Data.List.Split
-import Data.List(sort,nub)
+import Data.List(sort,nub, transpose)
 import Data.Char
 import Text.XML.HXT.DOM.Util
 import qualified Data.Text as T (replace, pack, splitOn)
 
 
 main :: IO ()
-main = day6
+main = day8
 
 day1:: IO ()
 day1 = do contents <- readFile "data/1.txt"
@@ -122,15 +122,43 @@ day6 = do contents <- readFile "data/6.txt"
           putStrLn  "Day 6:"
           let intList p
                 = foldl (\(num, prev) x  ->
-                    if (length (nub prev) /= length prev)
+                    if length (nub prev) /= length prev
                         then ((head num + 1) : num, tail prev ++ [x])
                      else ([head num + 1] ++ [0] ++ num, tail prev ++ [x]) )
                        ([0], take p contents) (drop p contents)
           let answer p
-                = p + ( last . head . splitWhen (==0) . tail . reverse $ fst (intList p) )
-          print  (splitWhen (==0) . tail . reverse $ fst (intList 14) )
+                = p + ( last . head . splitWhen (==0)
+                . tail . reverse $ fst (intList p) )
           putStrLn "\n Solution 1: "
           print $ answer 4
           putStrLn "\n Solution 2: "
           print $ answer 14
+          putStrLn "---------------"
+
+day7:: IO()
+day7 = do contents <- readFile "data/7.txt"
+          putStrLn "---------------"
+          putStrLn  "Day 7:"
+
+
+day8:: IO()
+day8 = do contents <- readFile "data/8.txt"
+          putStrLn "---------------"
+          putStrLn  "Day 8:"
+        --   need 4x list, built from seeming if rows / columns of trees
+        --  have hidden trees in them. This can be done with 2 folds 
+          let rows = lines contents
+          let columns = transpose rows
+          let forwardRows
+                = foldl (\(rowNum, coordList) row
+                -> (rowNum + 1, coordList ++ (map (\(_, _, indexes) 
+                -> map (\index -> (rowNum, index)) indexes) 
+                $ foldl (\(colNum, remainingHeights, indexes) val
+                -> if toInteger val `elem` remainingHeights
+                    then (colNum + 1, [toInteger val..9] ,val ++ indexes)
+                    else  (colNum + 1, remainingHeights, indexes))
+                     (0, [0..9], []) row ) (0, []) ))
+          print rows
+          putStrLn "---------------"
+          print columns
           putStrLn "---------------"
